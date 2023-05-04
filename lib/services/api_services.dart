@@ -8,10 +8,25 @@ class ApiServices {
   Future<WorldStatusModel> getApi() async {
     var url = AppUrl.apiurl;
     final response = await http.get(Uri.parse(url));
-    var data = json.decode(response.body);
 
     if (response.statusCode == 200) {
-      return WorldStatusModel.fromJson(jsonEncode(data));
+      var data = json.decode(response.body);
+      return WorldStatusModel.fromJson(json.encode(data));
+    } else {
+      throw Exception('Error');
+    }
+  }
+
+//---------------------Coutry Api Services------------
+
+  Future<List<dynamic>> getCountryApi() async {
+    var data;
+    var url = AppUrl.countryApiUrl;
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      data = json.decode(response.body);
+      return data;
     } else {
       throw Exception('Error');
     }

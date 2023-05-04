@@ -2,6 +2,7 @@
 
 import 'package:covid_tracker_app/Models/worldStatusModel.dart';
 import 'package:covid_tracker_app/constants/color_constants.dart';
+import 'package:covid_tracker_app/countries_screen.dart';
 import 'package:covid_tracker_app/services/api_services.dart';
 import 'package:covid_tracker_app/widgets/info_Row.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  late final AnimationController _animationController =
+  late final AnimationController _controller =
       AnimationController(duration: const Duration(seconds: 5), vsync: this);
 
   @override
   void dispose() {
     super.dispose();
-    _animationController.dispose();
+    _controller.dispose();
   }
 
   @override
@@ -45,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     child: SpinKitFadingCircle(
                       color: Colors.white,
                       size: 50.0,
-                      controller: _animationController,
+                      controller: _controller,
                     ),
                     flex: 1,
                   );
@@ -55,12 +56,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       PieChart(
                         dataMap: {
                           'Total':
-                              double.parse(snapshot.data!.cases!.toString()),
-                          'Late': double.parse(
-                              snapshot.data!.recovered!.toString()),
+                              double.parse(snapshot.data!.cases.toString()),
+                          'Late':
+                              double.parse(snapshot.data!.recovered.toString()),
                           'Recent':
-                              double.parse(snapshot.data!.deaths!.toString()),
+                              double.parse(snapshot.data!.deaths.toString()),
                         },
+                        chartValuesOptions: const ChartValuesOptions(
+                          showChartValuesInPercentage: true,
+                        ),
                         chartType: ChartType.ring,
                         colorList: colorList,
                         ringStrokeWidth: 20.0,
@@ -77,20 +81,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         padding: const EdgeInsets.all(10.0),
                         child: Card(
                             child: Column(children: [
-                          InfoRowWidget(title: 'Total', value: '200'),
-                          InfoRowWidget(title: 'Total', value: '200'),
+                          InfoRowWidget(
+                              title: 'Total Affected : ',
+                              value: snapshot.data!.cases.toString()),
+                          InfoRowWidget(
+                              title: 'Total Deaths : ',
+                              value: snapshot.data!.deaths.toString()),
+                          InfoRowWidget(
+                              title: 'Total Affected Coutries :',
+                              value:
+                                  snapshot.data!.affectedCountries.toString()),
                         ])),
                       ),
                       const SizedBox(
                         height: 50,
                       ),
-                      Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: Colors.green,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CountriesScreen(),
+                              ));
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Colors.green,
+                          ),
+                          child: const Center(child: Text('Track Countries')),
                         ),
-                        child: const Center(child: Text('Track Countries')),
                       )
                     ],
                   );
